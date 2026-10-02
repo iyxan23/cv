@@ -1,0 +1,96 @@
+% ---------------------------------------------------------------------------
+% cv.tex : LAYOUT ONLY. Edit this file to change how the CV looks.
+% Content lives in cv.toml. build.py turns it into build/<jobname>-content.tex,
+% which is \input at the bottom of this file. Don't put personal data here.
+% ---------------------------------------------------------------------------
+\documentclass[10pt,a4paper]{article}
+
+% --- Fonts: Palatino (URW via psnfss, ships with every TeX distribution) ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[sc]{mathpazo}   % [sc] = real small caps
+\usepackage{courier}        % monospace for `code`
+\linespread{1.04}
+
+% --- Language ---------------------------------------------------------------
+% build.py emits \cvlang{<babel name>} at the top of each generated body.
+% Hyphenation patterns come from babel when the language file is installed
+% (Indonesian: package babel-indonesian, in texlive-lang-other on Debian).
+% Otherwise non-English text is simply not hyphenated, which beats applying
+% English hyphenation rules to the wrong language.
+% To add a language: add it to [languages] in cv.toml and to the list below.
+\newif\ifcvbabel
+\IfFileExists{indonesian.ldf}{\cvbabeltrue}{\cvbabelfalse}
+\ifcvbabel\usepackage[indonesian,english]{babel}\fi
+\def\cvenglish{english}
+\newcommand{\cvlang}[1]{%
+  \ifcvbabel
+    \selectlanguage{#1}%
+  \else
+    \def\cvtmp{#1}%
+    \ifx\cvtmp\cvenglish\else \hyphenpenalty=10000 \exhyphenpenalty=10000 \fi
+  \fi}
+
+% --- Page -------------------------------------------------------------------
+\usepackage[a4paper,top=1.4cm,bottom=1.3cm,left=1.7cm,right=1.7cm]{geometry}
+\usepackage[protrusion=true,expansion=true]{microtype}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\emergencystretch}{2em}
+\raggedbottom
+
+% --- Colours & links --------------------------------------------------------
+\usepackage{xcolor}
+\definecolor{accent}{HTML}{1F3A5F}
+\definecolor{muted}{HTML}{555555}
+\definecolor{rulegray}{HTML}{999999}
+\usepackage[colorlinks=true,linkcolor=accent,urlcolor=accent]{hyperref}
+
+% --- Bullets ----------------------------------------------------------------
+\usepackage{enumitem}
+\newlist{cvbullets}{itemize}{1}
+\setlist[cvbullets]{
+  label=\textcolor{muted}{\textbullet},
+  leftmargin=1.1em, itemsep=0.12em, topsep=0.25em, parsep=0pt, partopsep=0pt
+}
+
+% --- Building blocks (build.py emits calls to these) ------------------------
+\newcommand{\cvsep}{\ \textcolor{muted}{\textperiodcentered}\ }
+
+% \cvheader{name}{tagline}{contacts}
+\newcommand{\cvheader}[3]{%
+  {\raggedright
+   {\LARGE\scshape\textls[30]{#1}}\par
+   \vspace{0.2em}
+   {\color{muted}#2}\par
+   \vspace{0.15em}
+   {\small #3}\par}
+   \vspace{0.4em}}
+
+% \cvsection{title}
+\newcommand{\cvsection}[1]{%
+  \par\addvspace{1.0\baselineskip}%
+  {\noindent\large\scshape\textls[60]{#1}}\par\nobreak
+  \vspace{-0.35\baselineskip}%
+  {\color{rulegray}\noindent\rule{\linewidth}{0.4pt}}\par\nobreak
+  \vspace{0.1\baselineskip}}
+
+% \cvhead{title}{dates}   \cvsub{organisation}{place}   \cvtext{free text}
+\newcommand{\cvhead}[2]{%
+  \par\addvspace{0.55\baselineskip}\noindent\textbf{#1}\hfill\textcolor{muted}{#2}\par\nopagebreak}
+\newcommand{\cvsub}[2]{%
+  \noindent\emph{#1}\hfill\textcolor{muted}{#2}\par\nopagebreak}
+\newcommand{\cvtext}[1]{\noindent #1\par}
+
+% \cvrow{left column}{text}: hanging-indent row (awards, skills, ...)
+\newlength{\cvdatew}
+\setlength{\cvdatew}{2.3cm}
+\newcommand{\cvrow}[2]{%
+  \par\noindent\hangindent=\cvdatew\hangafter=1
+  \makebox[\cvdatew][l]{#1}#2\par\vspace{0.18em}}
+
+% ---------------------------------------------------------------------------
+\begin{document}
+\input{build/\jobname-content}
+\end{document}
